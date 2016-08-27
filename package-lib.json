@@ -1,0 +1,13 @@
+{
+	"version" : "0.1.0",
+	"name" : "jdate-times",
+	"description" : "Java date/time conversion and parsing",
+	"homepage" : "https://github.com/TeamworkGuy2/JDateTimes",
+	"license" : "MIT",
+	"main" : "./bin/jdate_times.jar",
+	"dependencies" : {
+		"jtext-parser" : "*",
+		"jtext-util" : "*",
+		"jparser-data-type-like" : "*"
+	}
+}
