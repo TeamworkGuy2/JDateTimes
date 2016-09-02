@@ -2,7 +2,7 @@ package twg2.dateTimes;
 
 import java.util.Arrays;
 
-import twg2.parser.io.jsonLite.JsonLiteNumber;
+import twg2.parser.jsonLite.JsonLiteNumber;
 import twg2.parser.primitive.ParseInt;
 import twg2.parser.textParser.TextParser;
 import twg2.parser.textParserUtils.ReadNumber;

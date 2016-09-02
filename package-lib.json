@@ -1,5 +1,5 @@
 {
-	"version" : "0.1.0",
+	"version" : "0.1.1",
 	"name" : "jdate-times",
 	"description" : "Java date/time conversion and parsing",
 	"homepage" : "https://github.com/TeamworkGuy2/JDateTimes",
@@ -8,6 +8,7 @@
 	"dependencies" : {
 		"jtext-parser" : "*",
 		"jtext-util" : "*",
-		"jparser-data-type-like" : "*"
+		"jparse-json-lite" : "*",
+		"jparse-primitive" : "*"
 	}
 }
