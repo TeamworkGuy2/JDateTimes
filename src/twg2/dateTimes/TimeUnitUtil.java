@@ -1,5 +1,7 @@
 package twg2.dateTimes;
 
+import java.math.RoundingMode;
+import java.text.DecimalFormat;
 import java.util.concurrent.TimeUnit;
 
 /**
@@ -7,6 +9,10 @@ import java.util.concurrent.TimeUnit;
  * @since 2015-7-4
  */
 public class TimeUnitUtil {
+	private static final DecimalFormat format2DecimalPlaces;
+	private static final DecimalFormat format3DecimalPlaces;
+	private static volatile DecimalFormat lastCustomFormat;
+
 	static double C1 = 1;
 	static double C2 = C1 * 1000;
 	static double C3 = C2 * 1000;
@@ -41,6 +47,12 @@ public class TimeUnitUtil {
 	};
 
 
+	static {
+		format2DecimalPlaces = newFormat(2);
+		format3DecimalPlaces = newFormat(3);
+	}
+
+
 	private TimeUnitUtil() { throw new AssertionError("cannot instantiate static class TimeUnitUtil"); }
 
 
@@ -73,160 +85,29 @@ public class TimeUnitUtil {
 
 	public static final double convert(TimeUnit srcUnit, double srcDuration, TimeUnit dstUnit) {
 		return srcToDstMultiple(srcUnit, dstUnit) * srcDuration;
-		/*
-		//long nsPerPs = 1L;
-		long nsPerMicro = 1_000L;
-		long nsPerMilli = 1_000_000L;
-		long nsPerSec = 1_000_000_000L;
-		long nsPerMin = 60_000_000_000L;
-		long nsPerHr = 3_600_000_000_000L;
-		long nsPerDay = 86_400_000_000_000L;
+	}
 
-		switch(srcUnit) {
-		case DAYS:
-			switch(dstUnit) {
-			case DAYS:
-				return srcDuration;
-			case HOURS:
-				return srcDuration * 24L;
-			case MICROSECONDS:
-				return srcDuration * (24 * 3_600_000_000L);
-			case MILLISECONDS:
-				return srcDuration * (24 * 3_600_000L);
-			case MINUTES:
-				return srcDuration * (24 * 60L);
-			case NANOSECONDS:
-				return srcDuration * nsPerDay;
-			case SECONDS:
-				return srcDuration * (24 * 3600L);
-			default:
-				throw throwUnknownUnit(dstUnit, "destination");
-			}
 
-		case HOURS:
-			switch(dstUnit) {
-			case DAYS:
-				return srcDuration / 24L;
-			case HOURS:
-				return srcDuration;
-			case MICROSECONDS:
-				return srcDuration * 3_600_000_000L;
-			case MILLISECONDS:
-				return srcDuration * 3_600_000L;
-			case MINUTES:
-				return srcDuration * 60L;
-			case NANOSECONDS:
-				return srcDuration * nsPerHr;
-			case SECONDS:
-				return srcDuration * 3600L;
-			default:
-				throw throwUnknownUnit(dstUnit, "destination");
-			}
+	public static final String toString(TimeUnit srcUnit, double srcDuration, TimeUnit dstUnit, int decimalPlaces) {
+		double res = srcToDstMultiple(srcUnit, dstUnit) * srcDuration;
+		return decimalPlaces == 3 ? format3DecimalPlaces.format(res) : (decimalPlaces == 2 ? format2DecimalPlaces.format(res) : newFormat(decimalPlaces).format(res));
+	}
 
-		case MICROSECONDS:
-			switch(dstUnit) {
-			case DAYS:
-				return srcDuration / (24 * 3_600_000_000L);
-			case HOURS:
-				return srcDuration / (3_600_000_000L);
-			case MICROSECONDS:
-				return srcDuration;
-			case MILLISECONDS:
-				return srcDuration / 1000L;
-			case MINUTES:
-				return srcDuration / 60_000_000L;
-			case NANOSECONDS:
-				return srcDuration * nsPerMicro;
-			case SECONDS:
-				return srcDuration / 1_000_000L;
-			default:
-				throw throwUnknownUnit(dstUnit, "destination");
-			}
 
-		case MILLISECONDS:
-			switch(dstUnit) {
-			case DAYS:
-				return srcDuration / (24 * 3_600_000L);
-			case HOURS:
-				return srcDuration / 3_600_000L;
-			case MICROSECONDS:
-				return srcDuration * 1000L;
-			case MILLISECONDS:
-				return srcDuration;
-			case MINUTES:
-				return srcDuration / 60_000L;
-			case NANOSECONDS:
-				return srcDuration * nsPerMilli;
-			case SECONDS:
-				return srcDuration / 1000L;
-			default:
-				throw throwUnknownUnit(dstUnit, "destination");
-			}
+	static DecimalFormat newFormat(int decimalPlaces) {
+		DecimalFormat tmpFormat = TimeUnitUtil.lastCustomFormat;
 
-		case MINUTES:
-			switch(dstUnit) {
-			case DAYS:
-				return srcDuration / (24 * 60L);
-			case HOURS:
-				return srcDuration / 60L;
-			case MICROSECONDS:
-				return srcDuration * 60_000_000L;
-			case MILLISECONDS:
-				return srcDuration * 60_000L;
-			case MINUTES:
-				return srcDuration;
-			case NANOSECONDS:
-				return srcDuration * nsPerMin;
-			case SECONDS:
-				return srcDuration * 60L;
-			default:
-				throw throwUnknownUnit(dstUnit, "destination");
-			}
-
-		case NANOSECONDS:
-			switch(dstUnit) {
-			case DAYS:
-				return srcDuration / nsPerDay;
-			case HOURS:
-				return srcDuration / nsPerHr;
-			case MICROSECONDS:
-				return srcDuration / nsPerMicro;
-			case MILLISECONDS:
-				return srcDuration / nsPerMilli;
-			case MINUTES:
-				return srcDuration / nsPerMin;
-			case NANOSECONDS:
-				return srcDuration;
-			case SECONDS:
-				return srcDuration / nsPerSec;
-			default:
-				throw throwUnknownUnit(dstUnit, "destination");
-			}
-
-		case SECONDS:
-			switch(dstUnit) {
-			case DAYS:
-				return srcDuration / (24 * 3600L);
-			case HOURS:
-				return srcDuration / 3600L;
-			case MICROSECONDS:
-				return srcDuration * 1_000_000L;
-			case MILLISECONDS:
-				return srcDuration * 1000L;
-			case MINUTES:
-				return srcDuration / 60L;
-			case NANOSECONDS:
-				return srcDuration * nsPerSec;
-			case SECONDS:
-				return srcDuration;
-			default:
-				throw throwUnknownUnit(dstUnit, "destination");
-			}
-
-		default:
-			throw throwUnknownUnit(srcUnit, "source");
+		if(tmpFormat != null && tmpFormat.getMaximumFractionDigits() == decimalPlaces) {
+			return tmpFormat;
 		}
-		*/
+		else {
+			DecimalFormat format = new DecimalFormat("#.#");
+			format.setRoundingMode(RoundingMode.HALF_UP);
+			format.setMinimumFractionDigits(0);
+			format.setMaximumFractionDigits(decimalPlaces);
+			TimeUnitUtil.lastCustomFormat = format;
+			return format;
+		}
 	}
 
 

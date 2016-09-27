@@ -14,7 +14,7 @@ import twg2.dateTimes.TimeUnitUtil;
 public class TimeUnitUtilTest {
 
 	@Test
-	public void testTimeUnitUtil() {
+	public void convertTest() {
 		TimeUnit[] units = TimeUnit.values();
 		// try various time values
 		long[] values = { 3, 5, 20 };
@@ -48,6 +48,33 @@ public class TimeUnitUtilTest {
 				}
 			}
 		}
+	}
+
+
+	@Test
+	public void toStringTest() {
+		TimeUnit SEC = TimeUnit.SECONDS;
+		TimeUnit MIN = TimeUnit.MINUTES;
+		TimeUnit MS = TimeUnit.MILLISECONDS;
+		TimeUnit NS = TimeUnit.NANOSECONDS;
+
+		Assert.assertEquals("0.3", TimeUnitUtil.toString(SEC, 20, MIN, 1));
+		Assert.assertEquals("0.33", TimeUnitUtil.toString(SEC, 20, MIN, 2));
+		Assert.assertEquals("0.333", TimeUnitUtil.toString(SEC, 20, MIN, 3));
+
+		Assert.assertEquals("150", TimeUnitUtil.toString(NS, 150_000_000, MS, 3));
+		Assert.assertEquals("1.5", TimeUnitUtil.toString(NS, 1_500_000, MS, 3));
+		Assert.assertEquals("0.002", TimeUnitUtil.toString(NS, 1_500, MS, 3));
+		Assert.assertEquals("0.0015", TimeUnitUtil.toString(NS, 1_500, MS, 4));
+		Assert.assertEquals("0.0015", TimeUnitUtil.toString(NS, 1_500, MS, 5));
+
+		Assert.assertEquals("0", TimeUnitUtil.toString(NS, 12_345, MS, 1));
+		Assert.assertEquals("0.0123", TimeUnitUtil.toString(NS, 12_345, MS, 4));
+		Assert.assertEquals("0.0123", TimeUnitUtil.toString(NS, 12_345, MS, 4)); // check that format reuse doesn't cause issue
+		Assert.assertEquals("0.01235", TimeUnitUtil.toString(NS, 12_345, MS, 5));
+		Assert.assertEquals("0.012345", TimeUnitUtil.toString(NS, 12_345, MS, 6));
+		Assert.assertEquals("0.012345", TimeUnitUtil.toString(NS, 12_345, MS, 7));
+		Assert.assertEquals("0.012345", TimeUnitUtil.toString(NS, 12_345, MS, 7)); // check that format reuse doesn't cause issue
 	}
 
 }

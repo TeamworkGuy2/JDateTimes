@@ -5,7 +5,7 @@ import java.util.concurrent.TimeUnit;
 import org.junit.Test;
 
 import twg2.dateTimes.TimeParser;
-import twg2.parser.textParser.TextParserImpl;
+import twg2.parser.textParser.TextIteratorParser;
 import checks.CheckTask;
 
 /**
@@ -26,7 +26,7 @@ public class TimeParserTest {
 				(long)((1 * 60 * 60) * milli),
 				(long)(0.0130d * milli)
 		};
-		CheckTask.assertTests(strs, expect, (str) -> TimeParser.parseTimeMilli(TextParserImpl.of(str), true));
+		CheckTask.assertTests(strs, expect, (str) -> TimeParser.parseTimeMilli(TextIteratorParser.of(str), true));
 	}
 
 
@@ -64,7 +64,7 @@ public class TimeParserTest {
 
 		// parsing string into millisecond value
 		CheckTask.assertTests(input, expect, (str) -> {
-			long time = TimeParser.parseClockLikeToMillis(TextParserImpl.of(str));
+			long time = TimeParser.parseClockLikeToMillis(TextIteratorParser.of(str));
 			return time;
 		});
 
@@ -111,7 +111,7 @@ public class TimeParserTest {
 		});
 
 		CheckTask.assertTests(input, expect, (str) -> {
-			return TimeParser.parseNamedTimeUnitToMillis(TextParserImpl.of(str));
+			return TimeParser.parseNamedTimeUnitToMillis(TextIteratorParser.of(str));
 		});
 	}
 
