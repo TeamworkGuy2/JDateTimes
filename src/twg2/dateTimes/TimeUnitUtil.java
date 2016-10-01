@@ -1,7 +1,5 @@
 package twg2.dateTimes;
 
-import java.math.RoundingMode;
-import java.text.DecimalFormat;
 import java.util.concurrent.TimeUnit;
 
 /**
@@ -9,9 +7,7 @@ import java.util.concurrent.TimeUnit;
  * @since 2015-7-4
  */
 public class TimeUnitUtil {
-	private static final DecimalFormat format2DecimalPlaces;
-	private static final DecimalFormat format3DecimalPlaces;
-	private static volatile DecimalFormat lastCustomFormat;
+	static final TimeUnitFormatter defaultFormatter = new TimeUnitFormatter();
 
 	static double C1 = 1;
 	static double C2 = C1 * 1000;
@@ -47,67 +43,53 @@ public class TimeUnitUtil {
 	};
 
 
-	static {
-		format2DecimalPlaces = newFormat(2);
-		format3DecimalPlaces = newFormat(3);
-	}
-
-
 	private TimeUnitUtil() { throw new AssertionError("cannot instantiate static class TimeUnitUtil"); }
 
 
-	public static final double srcToDstMultiple(TimeUnit srcUnit, TimeUnit dstUnit) {
+	public static final double getSrcToDstMultiplier(TimeUnit srcUnit, TimeUnit dstUnit) {
 		return APerB[dstUnit.ordinal()][srcUnit.ordinal()];
 	}
 
 
-	public static final String abbreviation(TimeUnit unit, boolean shortest, boolean plural) {
-		switch(unit) {
-		case DAYS:
-			return (plural ? "days" : "day");
-		case HOURS:
-			return (plural ? "hrs" : "hr");
-		case MICROSECONDS:
-			return (plural ? "micros" : "micro");
-		case MILLISECONDS:
-			return (shortest ? "ms" : (plural ? "millis" : "milli"));
-		case MINUTES:
-			return (plural ? "mins" : "min");
-		case NANOSECONDS:
-			return (shortest ? "ns" : (plural ? "nanos" : "nano"));
-		case SECONDS:
-			return (plural ? "secs" : "sec");
-		default:
-			throw throwUnknownUnit(unit, null);
-		}
-	}
-
-
+	/** Convert a time measurement from one unit to another.<br>
+	 * Example: {@code convert(TimeUnit.HOURS, 2.55, TimeUnit.MINUTES)}<br>
+	 * returns: {@code 153.0}
+	 * @param srcUnit the units of the {@code srcDuration} (i.e. milliseconds or minutes)
+	 * @param srcDuration the time period to convert
+	 * @param dstUnit the units to convert {@code srcDuration} to (i.e. hours or nanoseconds)
+	 * @return a decimal number represented the converted units as accurately as possible
+	 */
 	public static final double convert(TimeUnit srcUnit, double srcDuration, TimeUnit dstUnit) {
-		return srcToDstMultiple(srcUnit, dstUnit) * srcDuration;
+		return getSrcToDstMultiplier(srcUnit, dstUnit) * srcDuration;
 	}
 
 
-	public static final String toString(TimeUnit srcUnit, double srcDuration, TimeUnit dstUnit, int decimalPlaces) {
-		double res = srcToDstMultiple(srcUnit, dstUnit) * srcDuration;
-		return decimalPlaces == 3 ? format3DecimalPlaces.format(res) : (decimalPlaces == 2 ? format2DecimalPlaces.format(res) : newFormat(decimalPlaces).format(res));
+	// ==== mirror TimeUnitFormatter's API ====
+	/** @see TimeUnitFormatter#abbreviation(TimeUnit, boolean, boolean)
+	 */
+	public static final String abbreviation(TimeUnit unit, boolean shortest, boolean plural) {
+		return defaultFormatter.abbreviation(unit, shortest, plural);
 	}
 
 
-	static DecimalFormat newFormat(int decimalPlaces) {
-		DecimalFormat tmpFormat = TimeUnitUtil.lastCustomFormat;
+	/** @see TimeUnitFormatter#format(TimeUnit, double, TimeUnit, int)
+	 */
+	public static final String format(TimeUnit srcUnit, double srcDuration, TimeUnit dstUnit, int decimalPlaces) {
+		return defaultFormatter.format(srcUnit, srcDuration, dstUnit, decimalPlaces);
+	}
 
-		if(tmpFormat != null && tmpFormat.getMaximumFractionDigits() == decimalPlaces) {
-			return tmpFormat;
-		}
-		else {
-			DecimalFormat format = new DecimalFormat("#.#");
-			format.setRoundingMode(RoundingMode.HALF_UP);
-			format.setMinimumFractionDigits(0);
-			format.setMaximumFractionDigits(decimalPlaces);
-			TimeUnitUtil.lastCustomFormat = format;
-			return format;
-		}
+
+	/** @see TimeUnitFormatter#format(TimeUnit, double, TimeUnit, int, boolean)
+	 */
+	public static final String format(TimeUnit srcUnit, double srcDuration, TimeUnit dstUnit, int decimalPlaces, boolean shortest) {
+		return defaultFormatter.format(srcUnit, srcDuration, dstUnit, decimalPlaces, shortest);
+	}
+
+
+	/** @see TimeUnitFormatter#format(TimeUnit, double, TimeUnit, int, boolean, boolean)
+	 */
+	public static final String format(TimeUnit srcUnit, double srcDuration, TimeUnit dstUnit, int decimalPlaces, boolean shortest, boolean plural) {
+		return defaultFormatter.format(srcUnit, srcDuration, dstUnit, decimalPlaces, shortest, plural);
 	}
 
 

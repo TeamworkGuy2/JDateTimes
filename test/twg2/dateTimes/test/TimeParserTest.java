@@ -63,25 +63,25 @@ public class TimeParserTest {
 		});
 
 		// parsing string into millisecond value
-		CheckTask.assertTests(input, expect, (str) -> {
+		CheckTask.assertTests(input, expect, (String str) -> {
 			long time = TimeParser.parseClockLikeToMillis(TextIteratorParser.of(str));
 			return time;
 		});
 
 		// converting milliseconds to string
-		CheckTask.assertTests(expect, input, (ms) -> {
+		CheckTask.assertTests(expect, input, (Long ms) -> {
 			String str = TimeParser.formatMsToClockLike(ms, true, true);
 			return str;
 		});
 
 		// converting milliseconds to string (no milliseconds)
-		CheckTask.assertTests(expect, inputNoMillis, (ms) -> {
+		CheckTask.assertTests(expect, inputNoMillis, (Long ms) -> {
 			String str = TimeParser.formatMsToClockLike(ms);
 			return str;
 		});
 
 		// converting milliseconds to string (no seconds and no milliseconds)
-		CheckTask.assertTests(expect, inputNoSecs, (ms) -> {
+		CheckTask.assertTests(expect, inputNoSecs, (Long ms) -> {
 			String str = TimeParser.formatMsToClockLike(ms, false, false);
 			return str;
 		});
@@ -110,7 +110,7 @@ public class TimeParserTest {
 			return TimeParser.parseNamedTimeUnitToMillis(str);
 		});
 
-		CheckTask.assertTests(input, expect, (str) -> {
+		CheckTask.assertTests(input, expect, (String str) -> {
 			return TimeParser.parseNamedTimeUnitToMillis(TextIteratorParser.of(str));
 		});
 	}
