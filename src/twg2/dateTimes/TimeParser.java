@@ -1,7 +1,5 @@
 package twg2.dateTimes;
 
-import java.util.Arrays;
-
 import twg2.parser.jsonLite.JsonLiteNumber;
 import twg2.parser.primitive.ParseInt;
 import twg2.parser.textParser.TextParser;
@@ -41,25 +39,25 @@ public class TimeParser {
 					valMilli = (long)(number.asDouble() * 1000);
 				}
 				// hh:mm:ss.ms
-				return val1*3600*1000 + val2*60*1000 + val3*1000 + valMilli;
+				return val1 * 3600 * 1000 + val2 * 60 * 1000 + val3 * 1000 + valMilli;
 			}
 			// mm:ss.ms
 			else if(in.nextIf('.')) {
 				JsonLiteNumber.readNumberCustom(in, false, false, true, false, false, number);
 				valMilli = (long)(number.asDouble() * 1000);
-				return val1*60*1000 + val2*1000 + valMilli;
+				return val1 * 60 * 1000 + val2 * 1000 + valMilli;
 			}
 			// mm:ss
-			return val1*60*1000 + val2*1000;
+			return val1 * 60 * 1000 + val2 * 1000;
 		}
 		// ss.ms
 		else if(in.nextIf('.')) {
 			JsonLiteNumber.readNumberCustom(in, false, false, true, false, false, number);
 			valMilli = (long)(number.asDouble() * 1000);
-			return val1*1000 + valMilli;
+			return val1 * 1000 + valMilli;
 		}
 		// ss
-		return val1*1000;
+		return val1 * 1000;
 	}
 
 
@@ -76,43 +74,35 @@ public class TimeParser {
 	 * @return the hour:minute:second value in milliseconds
 	 */
 	public static final long parseClockLikeToMillis(String hrMinSecMillis) {
-		String[] hrMinSecMillisAry = new String[4];
-		StringSplit.split(hrMinSecMillis, ':', hrMinSecMillisAry);
+		String[] parts = new String[3];
+		StringSplit.split(hrMinSecMillis, ':', parts);
+		String hrsStr = parts[0];
+		String minsStr = parts[1];
+		String secsStr = parts[2];
 
-		// hours, minutes, seconds
-		if(hrMinSecMillisAry[2] != null) {
-			int msIndex = hrMinSecMillisAry[2].indexOf('.');
-			// hours, minutes, seconds, milliseconds
-			if(msIndex > 0) {
-				String secs = hrMinSecMillisAry[2].substring(0, msIndex);
-				String ms = hrMinSecMillisAry[2].substring(msIndex);
-				hrMinSecMillisAry[2] = secs;
-				hrMinSecMillisAry[3] = ms;
+		if(hrsStr == null) {
+			throw new IllegalArgumentException("invalid hour minute second string " + hrMinSecMillis);
+		}
+		// 1 part = seconds
+		else if(minsStr == null) {
+			secsStr = hrsStr;
+			minsStr = null;
+			hrsStr = null;
+		}
+		// 2 parts = minutes and seconds
+		else if(secsStr == null) {
+			secsStr = minsStr;
+			minsStr = hrsStr;
+			hrsStr = null;
+		}
+		// 3 parts = hours, minutes, and seconds
 
-				return (long)(((long)Integer.parseInt(hrMinSecMillisAry[0]) * 60 * 60 +
-						Integer.parseInt(hrMinSecMillisAry[1]) * 60 +
-						Integer.parseInt(hrMinSecMillisAry[2]) +
-						Double.parseDouble(hrMinSecMillisAry[3])) * 1000);
-			}
-			else {
-				return ((long)Integer.parseInt(hrMinSecMillisAry[0]) * 60 * 60 +
-						Integer.parseInt(hrMinSecMillisAry[1]) * 60 +
-						Integer.parseInt(hrMinSecMillisAry[2])) * 1000;
-			}
-		}
-		// minutes and seconds
-		else if(hrMinSecMillisAry[1] != null) {
-			return ((long)Integer.parseInt(hrMinSecMillisAry[0]) * 60 +
-					Integer.parseInt(hrMinSecMillisAry[1])) * 1000;
-		}
-		// seconds only
-		else if(hrMinSecMillisAry[0] != null) {
-			return (long)Integer.parseInt(hrMinSecMillisAry[0]) * 1000;
-		}
-		else {
-			throw new IllegalArgumentException("an hour minute second string can contain from 1 to 4 strings, " +
-					"input strings " + Arrays.toString(hrMinSecMillisAry) + " are not valid");
-		}
+		int hrs = hrsStr != null ? Integer.parseInt(hrsStr) : 0;
+		int mins = minsStr != null ? Integer.parseInt(minsStr) : 0;
+		boolean hasDecimal = secsStr.indexOf('.') > -1;
+		double secs = hasDecimal ? Double.parseDouble(secsStr) : Integer.parseInt(secsStr);
+
+		return (long)((hrs * 3600 + mins * 60 + secs) * 1000);
 	}
 
 
@@ -160,7 +150,7 @@ public class TimeParser {
 		}
 		else {
 			throw new IllegalArgumentException("an hour minute second string can contain from 1 to 4 strings, " +
-					"input strings '" + strB.toString() + "' are not valid");
+					"input string '" + strB.toString() + "' is not valid");
 		}
 
 		// optional 

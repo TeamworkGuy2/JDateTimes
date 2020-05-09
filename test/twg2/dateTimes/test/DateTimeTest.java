@@ -1,8 +1,6 @@
 package twg2.dateTimes.test;
 
-import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.time.Instant;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.util.Date;
@@ -10,14 +8,13 @@ import java.util.Date;
 import org.junit.Test;
 
 import twg2.dateTimes.DateTimeConverter;
-import checks.CheckTask;
+import twg2.junitassist.checks.CheckTask;
 
 /**
  * @author TeamworkGuy2
  * @since 2014-12-2
  */
 public class DateTimeTest {
-
 
 	@Test
 	public void testDateTimeParsing() {
@@ -26,7 +23,6 @@ public class DateTimeTest {
 			"1899-12-13",
 			"5020-2-5"
 		};
-
 
 		ZoneId zone = ZoneId.of("Z");
 
@@ -41,7 +37,7 @@ public class DateTimeTest {
 		CheckTask.assertTests(strs, expected, (String str, Integer idx) -> {
 			try {
 				ZonedDateTime zdt = ZonedDateTime.ofInstant(formatter.parse(str).toInstant(), zone);
-				System.out.println(zdt + " | " + expected[idx]);
+				//System.out.println(zdt + " | " + expected[idx]);
 				return zdt;
 			} catch (Exception e) {
 				throw new RuntimeException(e);
@@ -50,7 +46,7 @@ public class DateTimeTest {
 	}
 
 
-	public static void formatParseDateTimeTest() throws ParseException {
+	/*public static void formatParseDateTimeTest() throws ParseException {
 		Date[] dates = new Date[] { Date.from(Instant.now()), new Date((long)(Math.random() * 1_000_000_000_000L)) };
 		DateTimeConverter dateFormatter = DateTimeConverter.getDefaultInstance();
 		SimpleDateFormat[] formatters = new SimpleDateFormat[] {
@@ -71,6 +67,6 @@ public class DateTimeTest {
 			}
 			System.out.println();
 		}
-	}
+	}*/
 
 }
